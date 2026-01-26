@@ -30,11 +30,24 @@ jobs:
           node-version: 20
           cache: npm
 
+      - name: Show versions
+        run: |
+          node --version
+          npm --version
+
       - name: Install deps
-        run: npm ci
+        run: npm ci --no-audit --no-fund
 
       - name: Build
         run: npm run build
+
+      - name: Dump npm logs on failure
+        if: failure()
+        run: |
+          echo "=== ~/.npm/_logs ==="
+          ls -la ~/.npm/_logs || true
+          echo "=== latest npm logs ==="
+          tail -n +1 ~/.npm/_logs/* || true
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
