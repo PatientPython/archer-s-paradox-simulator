@@ -1,0 +1,5 @@
+{
+  "name": "Archer's Paradox Simulator",
+  "description": "A 3D interactive physics simulation of the Archer's Paradox, demonstrating transverse vibration, dynamic spine, and reference frame transformations.",
+  "requestFramePermissions": []
+}
