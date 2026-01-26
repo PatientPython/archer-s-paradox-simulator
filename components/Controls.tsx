@@ -82,156 +82,132 @@ const Controls: React.FC<ControlsProps> = ({ params, setParams, state, setState,
 
       {/* Presets - Node Setup */}
       <div className="space-y-3">
-        <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wider">震动模式预设 (波节数量)</h3>
+        <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wider">振动模式预设 (模式阶数 · 演示用)</h3>
         <div className="grid grid-cols-3 gap-2">
             <button onClick={() => setNodes(1)} className={`p-2 text-sm rounded border ${params.harmonicMode === 1 ? 'bg-blue-50 border-blue-500 text-blue-700' : 'bg-white border-slate-200 hover:border-blue-300'}`}>
-                1个模式 (简单弯曲)
+            1阶 (基础波形)
             </button>
             <button onClick={() => setNodes(3)} className={`p-2 text-sm rounded border ${params.harmonicMode === 3 ? 'bg-blue-50 border-blue-500 text-blue-700' : 'bg-white border-slate-200 hover:border-blue-300'}`}>
-                3个模式 (标准悖论)
+            3阶 (更复杂波形)
             </button>
             <button onClick={() => setNodes(5)} className={`p-2 text-sm rounded border ${params.harmonicMode === 5 ? 'bg-blue-50 border-blue-500 text-blue-700' : 'bg-white border-slate-200 hover:border-blue-300'}`}>
-                5个模式 (极软箭杆)
+            5阶 (高阶波形)
             </button>
         </div>
       </div>
 
-      {/* Physics Sliders */}
-      <div className="space-y-6">
-        <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wider">物理参数</h3>
+      {/* Physics Sliders - Compact Grid */}
+      <div className="space-y-4">
+        <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest border-b pb-1">物理参数</h3>
         
-        {/* Spine */}
-        <div className="space-y-2">
-          <div className="flex justify-between">
-            <label className="text-sm font-medium text-slate-700">静态挠度 (Static Spine)</label>
-            <span className="text-sm font-mono text-indigo-600">{params.spine}</span>
-          </div>
-          <input
-            type="range" min="50" max="250" step="5"
-            value={params.spine}
-            onChange={(e) => handleChange('spine', Number(e.target.value))}
-            className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
-          />
-          <div className="flex justify-between text-xs text-slate-400">
-            <span>极硬 (50)</span>
-            <span>最软 (250)</span>
-          </div>
+        {/* Spine & Length Group */}
+        <div className="grid grid-cols-2 gap-3">
+             <div className="space-y-1">
+                <div className="flex justify-between items-end">
+                    <label className="text-xs font-semibold text-slate-600">静态挠度</label>
+                    <span className="text-[10px] text-slate-400">大=软, 小=硬</span>
+                </div>
+                <input
+                    type="range" min="50" max="250" step="5"
+                    value={params.spine}
+                    onChange={(e) => handleChange('spine', Number(e.target.value))}
+                    className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                />
+             </div>
+             <div className="space-y-1">
+                <div className="flex justify-between items-end">
+                    <label className="text-xs font-semibold text-slate-600">箭长</label>
+                    <span className="text-[10px] text-slate-400">长=慢, 短=快</span>
+                </div>
+                <input
+                    type="range" min="1.0" max="1.8" step="0.05"
+                    value={params.length}
+                    onChange={(e) => handleChange('length', Number(e.target.value))}
+                    className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                />
+             </div>
         </div>
 
-        {/* Launch Speed & Draw Weight */}
-        <div className="p-3 bg-slate-50 rounded-lg space-y-4 border border-slate-200">
-            {/* Speed Control (Primary User Request) */}
-            <div className="space-y-2">
-                 <div className="flex justify-between">
-                    <label className="text-sm font-bold text-slate-800">发射初速度 (Launch Speed)</label>
-                    <span className="text-sm font-mono text-indigo-700 font-bold">{estSpeed.toFixed(1)} m/s</span>
+        {/* Launch Speed & Draw Weight (Merged/Collapsed) */}
+        <div className="bg-slate-50 rounded p-2 border border-slate-200 space-y-2">
+                 <div className="flex justify-between items-center">
+                    <label className="text-xs font-bold text-slate-800">发射初速度/拉力</label>
+                    <span className="text-xs font-mono text-indigo-700 font-bold">{estSpeed.toFixed(1)} m/s</span>
                  </div>
                  <input
-                    type="range" min="20" max="80" step="1"
+                    type="range" min="10" max="80" step="1"
                     value={estSpeed}
                     onChange={(e) => setSpeed(Number(e.target.value))}
                     className="w-full h-2 bg-indigo-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
                  />
-                 <div className="flex justify-between text-xs text-slate-400">
-                    <span>慢 (20)</span>
-                    <span>快 (80)</span>
+                 <div className="flex justify-between text-[10px] text-slate-400 px-1">
+                    <span>速度越快，拉力越大，弯曲越明显</span>
                  </div>
-            </div>
-
-            {/* Underlying Draw Weight */}
-            <div className="space-y-1 pt-2 border-t border-slate-200">
-               <div className="flex justify-between">
-                <label className="text-xs font-medium text-slate-500">对应拉力 (Draw Weight)</label>
-                <span className="text-xs font-mono text-slate-500">{params.drawWeight} lbs</span>
-              </div>
-              <input
-                type="range" min="5" max="60" step="0.5"
-                value={params.drawWeight}
-                onChange={(e) => handleChange('drawWeight', Number(e.target.value))}
-                className="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-slate-400"
-              />
-            </div>
-        </div>
-
-         {/* Arrow Length */}
-         <div className="space-y-2">
-           <div className="flex justify-between">
-            <label className="text-sm font-medium text-slate-700">箭长 (Length)</label>
-            <span className="text-sm font-mono text-indigo-600">{params.length.toFixed(2)} m</span>
-          </div>
-          <input
-            type="range" min="1.0" max="1.8" step="0.05"
-            value={params.length}
-            onChange={(e) => handleChange('length', Number(e.target.value))}
-            className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
-          />
-        </div>
-        
-        {/* Damping */}
-        <div className="space-y-2">
-           <div className="flex justify-between">
-            <label className="text-sm font-medium text-slate-700">阻尼 (Damping)</label>
-            <span className="text-sm font-mono text-indigo-600">{params.damping.toFixed(1)}</span>
-          </div>
-          <input
-            type="range" min="0.1" max="2.0" step="0.1"
-            value={params.damping}
-            onChange={(e) => handleChange('damping', Number(e.target.value))}
-            className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
-          />
+                 
+                 <div className="flex justify-between items-center pt-2 border-t border-slate-200/50 mt-1">
+                    <span className="text-[10px] text-slate-500">拉力: {params.drawWeight} lbs</span>
+                    {/* Tiny Damping Control tucked in */}
+                    <div className="flex items-center gap-2 w-1/2 justify-end">
+                        <label className="text-[10px] text-slate-400">阻尼(大=停得快)</label>
+                        <input
+                            type="range" min="0.1" max="2.0" step="0.1"
+                            value={params.damping}
+                            onChange={(e) => handleChange('damping', Number(e.target.value))}
+                            className="w-16 h-1 bg-slate-200 rounded appearance-none cursor-pointer accent-slate-500"
+                        />
+                         <span className="text-[10px] w-4 text-right text-slate-500">{params.damping}</span>
+                    </div>
+                 </div>
         </div>
       </div>
 
       {/* View Options */}
-      <div className="space-y-3 pt-4 border-t border-slate-200">
-         <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wider">视图选项</h3>
+      <div className="space-y-3 pt-2 border-t border-slate-200">
+         <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest">视图与播放</h3>
          
-         <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-            <span className="text-sm text-slate-700">参考系</span>
-            <div className="flex bg-slate-200 rounded p-1">
-                <button 
-                    onClick={() => setState(s => ({...s, viewFrame: ViewFrame.WORLD}))}
-                    className={`px-3 py-1 text-xs rounded transition-all ${state.viewFrame === ViewFrame.WORLD ? 'bg-white shadow text-indigo-600 font-bold' : 'text-slate-500'}`}
-                >
-                    世界
-                </button>
-                <button 
-                    onClick={() => setState(s => ({...s, viewFrame: ViewFrame.COM}))}
-                    className={`px-3 py-1 text-xs rounded transition-all ${state.viewFrame === ViewFrame.COM ? 'bg-white shadow text-indigo-600 font-bold' : 'text-slate-500'}`}
-                >
-                    质心
-                </button>
+         {/* Playback Speed (New Segmented Control) */}
+         <div className="space-y-1">
+            <div className="flex justify-between text-xs text-slate-500 mb-1">
+                <span>播放倍速</span>
+                <span className="font-mono">{state.speed}x</span>
+            </div>
+            <div className="grid grid-cols-6 gap-1">
+                {[0.3, 0.5, 0.8, 1.0, 1.5, 2.0].map(s => (
+                    <button
+                        key={s}
+                        onClick={() => setState(prev => ({ ...prev, speed: s }))}
+                        className={`text-[10px] py-1 rounded border transition-colors ${
+                            state.speed === s 
+                            ? 'bg-indigo-600 text-white border-indigo-600 font-bold' 
+                            : 'bg-white text-slate-600 border-slate-200 hover:border-indigo-300'
+                        }`}
+                    >
+                        {s}x
+                    </button>
+                ))}
             </div>
          </div>
 
-         <label className="flex items-center justify-between p-3 bg-slate-50 rounded-lg cursor-pointer">
-            <span className="text-sm text-slate-700">显示波节 (Show Nodes)</span>
-            <input 
-                type="checkbox" 
-                checked={state.showNodes} 
-                onChange={e => setState(s => ({...s, showNodes: e.target.checked}))}
-                className="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500"
-            />
-         </label>
+         <div className="grid grid-cols-2 gap-2 mt-2">
+            <button 
+                onClick={() => setState(s => ({...s, showNodes: !s.showNodes}))}
+                className={`flex items-center justify-between px-3 py-2 text-xs rounded border transition-all ${
+                    state.showNodes ? 'bg-indigo-50 border-indigo-200 text-indigo-700' : 'bg-white border-slate-200 text-slate-600'
+                }`}
+            >
+                <span>显示波节</span>
+                <div className={`w-2 h-2 rounded-full ${state.showNodes ? 'bg-indigo-500' : 'bg-slate-300'}`} />
+            </button>
 
-         <label className="flex items-center justify-between p-3 bg-slate-50 rounded-lg cursor-pointer">
-            <span className="text-sm text-slate-700">显示质心轨迹</span>
-            <input 
-                type="checkbox" 
-                checked={state.showTrajectory} 
-                onChange={e => setState(s => ({...s, showTrajectory: e.target.checked}))}
-                className="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500"
-            />
-         </label>
-         
-          <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-            <span className="text-sm text-slate-700">播放速度</span>
-            <input 
-                type="range" min="0.1" max="1.5" step="0.1"
-                value={state.speed}
-                onChange={e => setState(s => ({...s, speed: Number(e.target.value)}))}
-                className="w-24 h-2 bg-slate-200 rounded-lg accent-indigo-600"
-            />
+            <button 
+                onClick={() => setState(s => ({...s, showTrajectory: !s.showTrajectory}))}
+                className={`flex items-center justify-between px-3 py-2 text-xs rounded border transition-all ${
+                    state.showTrajectory ? 'bg-indigo-50 border-indigo-200 text-indigo-700' : 'bg-white border-slate-200 text-slate-600'
+                }`}
+            >
+                <span>显示轨迹</span>
+                <div className={`w-2 h-2 rounded-full ${state.showTrajectory ? 'bg-indigo-500' : 'bg-slate-300'}`} />
+            </button>
          </div>
       </div>
 

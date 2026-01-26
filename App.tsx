@@ -3,10 +3,12 @@ import { SimulationParams, SimulationState, ViewFrame } from './types';
 import { DEFAULT_PARAMS } from './constants';
 import SimulationCanvas from './components/SimulationCanvas';
 import Controls from './components/Controls';
+import { PrinciplesModal } from './components/PrinciplesModal';
 
 const App: React.FC = () => {
   // State initialization
   const [params, setParams] = useState<SimulationParams>(DEFAULT_PARAMS);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [state, setState] = useState<SimulationState>({
     isPlaying: false,
     time: 0,
@@ -24,8 +26,18 @@ const App: React.FC = () => {
     }));
   }, []);
 
-  const handleTimeUpdate = useCallback((t: number) => {
-    setState(prev => ({ ...prev, time: t }));
+  const handleTimeUpdate = useCallback((t: number, currentAmpRatio?: number) => {
+    setState(prev => {
+        // Auto-stop if amplitude decays below 0.1% (0.001)
+        if (currentAmpRatio !== undefined && currentAmpRatio < 0.001 && prev.isPlaying && t > 0.5) {
+            // Schedule reset
+            setTimeout(() => {
+                setState(s => ({ ...s, time: 0, isPlaying: false, viewFrame: ViewFrame.WORLD }));
+            }, 500); // Small delay to show "Finished" state briefly if needed, or instant
+            return { ...prev, isPlaying: false };
+        }
+        return { ...prev, time: t };
+    });
   }, []);
 
   return (
@@ -43,10 +55,13 @@ const App: React.FC = () => {
             </div>
         </div>
         <div className="flex gap-4 text-sm text-slate-600">
-             <a href="#" className="hover:text-indigo-600 transition-colors">关于原理</a>
-             <a href="#" className="hover:text-indigo-600 transition-colors">帮助</a>
+             <button onClick={() => setIsModalOpen(true)} className="hover:text-indigo-600 transition-colors font-medium">
+                关于原理
+             </button>
         </div>
       </header>
+
+      <PrinciplesModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
 
       {/* Main Layout */}
       <main className="flex-1 flex overflow-hidden">
@@ -56,11 +71,12 @@ const App: React.FC = () => {
             <SimulationCanvas 
                 params={params} 
                 state={state} 
-                onTimeUpdate={handleTimeUpdate} 
+                onTimeUpdate={handleTimeUpdate}
+                onToggleFrame={() => setState(s => ({...s, viewFrame: s.viewFrame === ViewFrame.COM ? ViewFrame.WORLD : ViewFrame.COM}))}
             />
             
             {/* Legend / Overlay Info */}
-            <div className="absolute bottom-8 left-8 bg-white/90 backdrop-blur p-4 rounded-lg shadow-lg border border-slate-100 max-w-sm pointer-events-none">
+            <div className="absolute bottom-8 left-8 bg-white/90 backdrop-blur p-4 rounded-lg shadow-lg border border-slate-100 max-w-sm pointer-events-none z-[200]">
                 <h4 className="font-bold text-slate-800 mb-2 text-sm">物理状态</h4>
                 <div className="space-y-1 text-xs">
                      <div className="flex justify-between">
