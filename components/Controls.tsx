@@ -32,13 +32,13 @@ const Controls: React.FC<ControlsProps> = ({ params, setParams, state, setState,
     resetSimulation();
     switch (type) {
         case 'tuned':
-            setParams(prev => ({ ...prev, spine: 200, drawWeight: 12, harmonicMode: 3, length: 1.2 }));
+            setParams(prev => ({ ...prev, spine: 200, drawWeight: 12, harmonicMode: 3, length: 0.71 }));
             break;
         case 'stiff':
-            setParams(prev => ({ ...prev, spine: 100, drawWeight: 8, harmonicMode: 1, length: 1.0 })); // Ultra stiff
+            setParams(prev => ({ ...prev, spine: 100, drawWeight: 8, harmonicMode: 1, length: 0.66 })); // Ultra stiff
             break;
         case 'weak':
-            setParams(prev => ({ ...prev, spine: 250, drawWeight: 15, harmonicMode: 5, length: 1.5 })); // "Softest" possible in this range
+            setParams(prev => ({ ...prev, spine: 250, drawWeight: 15, harmonicMode: 5, length: 0.76 })); // "Softest" possible in this range
             break;
     }
     // Auto start
@@ -103,9 +103,9 @@ const Controls: React.FC<ControlsProps> = ({ params, setParams, state, setState,
         {/* Spine & Length Group */}
         <div className="grid grid-cols-2 gap-3">
              <div className="space-y-1">
-                <div className="flex justify-between items-end">
+                <div className="flex justify-between items-center">
                     <label className="text-xs font-semibold text-slate-600">静态挠度</label>
-                    <span className="text-[10px] text-slate-400">大=软, 小=硬</span>
+                    <span className="text-xs font-mono text-indigo-600 font-bold">{params.spine}</span>
                 </div>
                 <input
                     type="range" min="50" max="250" step="5"
@@ -113,18 +113,22 @@ const Controls: React.FC<ControlsProps> = ({ params, setParams, state, setState,
                     onChange={(e) => handleChange('spine', Number(e.target.value))}
                     className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
                 />
+                <div className="text-[10px] text-slate-400 text-right">大=软, 小=硬</div>
              </div>
              <div className="space-y-1">
-                <div className="flex justify-between items-end">
+                <div className="flex justify-between items-center">
                     <label className="text-xs font-semibold text-slate-600">箭长</label>
-                    <span className="text-[10px] text-slate-400">长=慢, 短=快</span>
+                    <span className="text-xs font-mono text-indigo-600 font-bold">
+                        {(params.length / 0.0254).toFixed(1)}&quot; <span className="text-[10px] text-slate-400 font-normal">({params.length.toFixed(2)}m)</span>
+                    </span>
                 </div>
                 <input
-                    type="range" min="1.0" max="1.8" step="0.05"
-                    value={params.length}
-                    onChange={(e) => handleChange('length', Number(e.target.value))}
+                    type="range" min="24" max="32" step="0.5"
+                    value={params.length / 0.0254}
+                    onChange={(e) => handleChange('length', Number(e.target.value) * 0.0254)}
                     className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
                 />
+                <div className="text-[10px] text-slate-400 text-right">长=慢, 短=快</div>
              </div>
         </div>
 
@@ -135,7 +139,7 @@ const Controls: React.FC<ControlsProps> = ({ params, setParams, state, setState,
                     <span className="text-xs font-mono text-indigo-700 font-bold">{estSpeed.toFixed(1)} m/s</span>
                  </div>
                  <input
-                    type="range" min="10" max="80" step="1"
+                    type="range" min="10" max="40" step="1"
                     value={estSpeed}
                     onChange={(e) => setSpeed(Number(e.target.value))}
                     className="w-full h-2 bg-indigo-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
