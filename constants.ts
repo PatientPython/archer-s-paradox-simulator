@@ -4,7 +4,7 @@ import { SimulationParams } from './types';
 export const DEFAULT_PARAMS: SimulationParams = {
   spine: 200, // Very stiff (User requested max softness 250)
   length: 0.71, // ~28 inches (Standard draw length)
-  drawWeight: 10, // Very weak (User requested max 15lbs)
+  drawWeight: 7, // Weak (keeps estimated launch speed within slider range)
   tipWeight: 100, // grains
   damping: 0.5,
   harmonicMode: 3, 
