@@ -80,6 +80,22 @@ const Controls: React.FC<ControlsProps> = ({ params, setParams, state, setState,
         </button>
       </div>
 
+      {/* Presets - Physics Configuration */}
+      <div className="space-y-3">
+        <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wider">箭矢配置预设</h3>
+        <div className="grid grid-cols-3 gap-2">
+            <button onClick={() => handlePreset('tuned')} className="p-2 text-sm rounded border bg-white border-slate-200 hover:border-emerald-400 hover:text-emerald-700 transition-colors">
+            ✅ 调优
+            </button>
+            <button onClick={() => handlePreset('stiff')} className="p-2 text-sm rounded border bg-white border-slate-200 hover:border-amber-400 hover:text-amber-700 transition-colors">
+            🪨 偏硬
+            </button>
+            <button onClick={() => handlePreset('weak')} className="p-2 text-sm rounded border bg-white border-slate-200 hover:border-rose-400 hover:text-rose-700 transition-colors">
+            🍃 偏软
+            </button>
+        </div>
+      </div>
+
       {/* Presets - Node Setup */}
       <div className="space-y-3">
         <h3 className="text-sm font-semibold text-slate-900 uppercase tracking-wider">振动模式预设 (模式阶数 · 演示用)</h3>
